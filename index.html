@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pemesanan Layanan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[readonly] {
+            background-color: #e9ecef;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #25d366;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #128c7e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Form Pemesanan Layanan</h2>
+
+    <label for="kategori">Kategori:</label>
+    <select id="kategori" onchange="updateLayanan()">
+        <option value="">Pilih Kategori</option>
+        <option value="instagram">Instagram Followers Indonesia</option>
+        <option value="tiktok">Tiktok Followers</option>
+        <option value="ecommerce">E-commerce Followers</option>
+    </select>
+
+    <label for="layanan">Layanan:</label>
+    <select id="layanan" onchange="updateForm()">
+        <option value="">Pilih Layanan</option>
+    </select>
+
+    <label for="deskripsi">Deskripsi:</label>
+    <input type="text" id="deskripsi" readonly>
+
+    <label for="min-order">Minimal Pesanan:</label>
+    <input type="text" id="min-order" readonly>
+
+    <label for="max-order">Maksimal Pesanan:</label>
+    <input type="text" id="max-order" readonly>
+
+    <label for="harga">Harga/1000:</label>
+    <input type="text" id="harga" readonly>
+
+    <label for="target">Target/Link:</label>
+    <input type="text" id="target">
+
+    <label for="jumlah">Jumlah Pesanan:</label>
+    <input type="number" id="jumlah" oninput="calculateTotal()">
+
+    <label for="total-harga">Total Harga:</label>
+    <input type="text" id="total-harga" readonly>
+
+    <button onclick="submitOrder()">Pesan</button>
+</div>
+
+<script>
+    const layananData = {
+        'instagram': [
+            { value: 'bot-termurah', text: 'Instagram Followers Indonesia BOT Termurah – RP 16.116', deskripsi: 'Username No Refill-Bot Termurah', minOrder: 10, maxOrder: 1000, harga: 16116 },
+            { value: 'kapasitas-1k', text: 'Instagram Followers Indonesia Kapasitas 1k Followers – RP 37.000', deskripsi: 'Instagram Followers Indonesia Kapasitas 1k', minOrder: 100, maxOrder: 1000, harga: 37000 }
+        ],
+        'tiktok': [
+            { value: 'tiktok-basic', text: 'Tiktok Followers Basic – RP 20.000', deskripsi: 'Tiktok Followers Basic Package', minOrder: 50, maxOrder: 5000, harga: 20000 }
+        ],
+        'ecommerce': [
+            { value: 'shopee-followers', text: 'Shopee Followers – RP 10.000', deskripsi: 'Shopee Followers Package', minOrder: 100, maxOrder: 2000, harga: 10000 }
+        ]
+    };
+
+    function updateLayanan() {
+        const kategori = document.getElementById('kategori').value;
+        const layananSelect = document.getElementById('layanan');
+        layananSelect.innerHTML = '<option value="">Pilih Layanan</option>';
+
+        if (kategori && layananData[kategori]) {
+            layananData[kategori].forEach(layanan => {
+                const option = document.createElement('option');
+                option.value = layanan.value;
+                option.text = layanan.text;
+                layananSelect.add(option);
+            });
+        }
+    }
+
+    function updateForm() {
+        const kategori = document.getElementById('kategori').value;
+        const layananValue = document.getElementById('layanan').value;
+        const layanan = layananData[kategori].find(l => l.value === layananValue);
+
+        if (layanan) {
+            document.getElementById('deskripsi').value = layanan.deskripsi;
+            document.getElementById('min-order').value = layanan.minOrder + ' followers';
+            document.getElementById('max-order').value = layanan.maxOrder + ' followers';
+            document.getElementById('harga').value = 'RP ' + layanan.harga;
+        }
+    }
+
+    function calculateTotal() {
+        const jumlah = document.getElementById('jumlah').value;
+        const harga = document.getElementById('harga').value.replace('RP ', '');
+        const total = jumlah * (harga / 1000);
+        document.getElementById('total-harga').value = 'RP ' + total.toFixed(2);
+    }
+
+    function submitOrder() {
+        const layananText = document.getElementById('layanan').options[document.getElementById('layanan').selectedIndex].text;
+        const target = document.getElementById('target').value;
+        const jumlah = document.getElementById('jumlah').value;
+        const whatsappLink = `https://wa.me/085877742669?text=${encodeURIComponent(layananText + '\nTarget/Link: ' + target + '\nJumlah Pesanan: ' + jumlah)}`;
+
+        window.open(whatsappLink, '_blank');
+    }
+</script>
+
+</body>
+</html>
